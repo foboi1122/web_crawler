@@ -53,9 +53,6 @@ public class SqlWrapper
 	
 	public static void main( String args[] ) throws SQLException
 	{
-		Connection c = null;
-		Statement stmt = null;
-
 		SqlWrapper sql = new SqlWrapper();
 		sql.InsertItem("www.test.com", "this is a wall of text", "<HTML>test test</HTML>");
 		sql.Close();

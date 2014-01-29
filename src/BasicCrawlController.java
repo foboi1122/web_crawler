@@ -1,4 +1,4 @@
-
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -22,8 +22,13 @@ public class BasicCrawlController {
 		private static boolean 	CRAWL_RESUMABLE = 	false;
 		private static String 	CRAWL_SEED = 		"http://www.ics.uci.edu/~lopes/";
 		
+		static Logger log = Logger.getLogger(
+                BasicCrawlController.class.getName());
+		
         public static void main(String[] args) throws Exception {
 
+        		//Start the logger and timestamp
+        		log.info("**********Crawler started at: "+System.currentTimeMillis()+"*************");
                 /*
                  * crawlStorageFolder is a folder where intermediate crawl data is
                  * stored.
@@ -108,5 +113,7 @@ public class BasicCrawlController {
                 System.out.println("   Processed Pages: " + totalProcessedPages);
                 System.out.println("   Total Links found: " + totalLinks);
                 System.out.println("   Total Text Size: " + totalTextSize);
+                
+                log.info("**********Crawler stopped at: "+System.currentTimeMillis()+"*************");
         }
 }
