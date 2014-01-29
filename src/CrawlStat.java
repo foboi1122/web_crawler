@@ -23,16 +23,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import edu.uci.ics.crawler4j.url.WebURL;
 
 public class CrawlStat {
-        private int 					mNumPages;			//# of pages
-        private long 					mLongestPageLength; //# words in longest page
-        private Map<String, Integer> 	mSubdomainsMap;		//subdomain names and frequencies
-        private Map<String, Integer> 	mWordMap;			//words and frequencies Map
-        private Map<String, Integer> 	m2gramMap;			//2grams and frequencies Map
-        private int 					mMaxTextLength;		//Maximum text length
+        private static int 				mNumPages;			//# of pages
+        private static long 			mLongestPageLength; //# words in longest page
+        private static Map<String, Integer> 	mSubdomainsMap;		//subdomain names and frequencies
+        private static Map<String, Integer> 	mWordMap;			//words and frequencies Map
+        private static Map<String, Integer> 	m2gramMap;			//2grams and frequencies Map
+        private static int 				mMaxTextLength;		//Maximum text length
 
+        static Logger log = Logger.getLogger(
+        		CrawlStat.class.getName());
+        
         public CrawlStat(){
         	mSubdomainsMap = new HashMap<String, Integer>();
         	mWordMap = new HashMap<String, Integer>();

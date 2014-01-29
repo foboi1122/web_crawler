@@ -15,7 +15,7 @@ public class BasicCrawlController {
 
 		private static String 	USER_AGENT = 		"UCI IR 76111817 36928917";
 		private static String 	STORAGE_FOLDER = 	"/crawl/root/";
-		private static int 	  	CRAWL_THREADS = 	20;
+		private static int 	  	CRAWL_THREADS = 	70;
 		private static int 	  	CRAWL_DELAY_MS = 	300;
 		private static int 	  	CRAWL_DEPTH = 		-1;
 		private static int    	CRAWL_MAX_PG_TO_FETCH = 1000;

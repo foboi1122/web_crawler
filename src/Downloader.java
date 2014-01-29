@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,9 @@ public class Downloader {
         public int getTextLength(){ return textLength;}
         public WebURL getURL(){ return curURL;}
         
+        static Logger log = Logger.getLogger(
+        		Downloader.class.getName());
+        
         public Downloader() {
                 CrawlConfig config = new CrawlConfig();
                 parser = new Parser(config);
@@ -75,12 +79,14 @@ public class Downloader {
                                         }
                                 } catch (Exception e) {
                                         e.printStackTrace();
+                                        log.info("Warning, link was discarded: " + url);
                                 }
                         }
                 } finally {
                         if (fetchResult != null)
                         {
                                 fetchResult.discardContentIfNotConsumed();
+                                
                         }                       
                 }
                 return null;
@@ -134,18 +140,18 @@ public class Downloader {
                     		HtmlParseData htmlParseData = (HtmlParseData) parseData;
                     		
                     		//Index all 2-grams, count text
-                    		twoGramList = this.get2Grams(((HtmlParseData) parseData).getText());
+//                    		twoGramList = this.get2Grams(((HtmlParseData) parseData).getText());
                     		
                     		//Tokenize text and remove stop words
-                    		wordList = cleanStream(((HtmlParseData) parseData).getText());
+//                    		wordList = cleanStream(((HtmlParseData) parseData).getText());
                     		
                     		
                     	}
                     } else {
-                    	System.out.println("Couldn't parse the content of the page.");
+                    	log.info("Couldn't parse the content: " + url);
                     }
                 } else {
-                	System.out.println("Couldn't fetch the content of the page.");
+                	log.info("Couldn't fetch the content: " + url);
                 }
                 System.out.println("==============");
                 

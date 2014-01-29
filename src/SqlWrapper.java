@@ -1,8 +1,12 @@
 import java.sql.*;
 
+import org.apache.log4j.Logger;
+
 public class SqlWrapper
 {
 	private Connection c = null;
+	static Logger log = Logger.getLogger(
+    		BasicCrawler.class.getName());
 	
 	public SqlWrapper()
 	{
@@ -22,7 +26,7 @@ public class SqlWrapper
 			
 		} catch ( Exception e ) {
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-			System.exit(0);
+			log.info(e.getClass().getName() + ": " + e.getMessage());
 		}
 		System.out.println("Opened database successfully");
 	}

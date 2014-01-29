@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import org.apache.log4j.Logger;
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -35,8 +36,11 @@ public class BasicCrawler extends WebCrawler {
 
         CrawlStat myCrawlStat;
         Downloader myDownloader;
-        SqlWrapper mySqlWrapper;
+        static SqlWrapper mySqlWrapper;
 
+        static Logger log = Logger.getLogger(
+        		BasicCrawler.class.getName());
+        
         public BasicCrawler() {
                 myCrawlStat = new CrawlStat();
                 myDownloader = new Downloader();
@@ -55,7 +59,7 @@ public class BasicCrawler extends WebCrawler {
                 myCrawlStat.incNumPages();
                 
                 if (page.getParseData() instanceof HtmlParseData) {
-                		myCrawlStat.insertSubdomainsMap(page.getWebURL());
+//                		myCrawlStat.insertSubdomainsMap(page.getWebURL());
                         HtmlParseData parseData = (HtmlParseData) page.getParseData();
                         List<WebURL> links = parseData.getOutgoingUrls();
 //                        myCrawlStat.incTotalLinks(links.size());
@@ -68,7 +72,7 @@ public class BasicCrawler extends WebCrawler {
                         try {
                         	mySqlWrapper.InsertItem(page.getWebURL().getURL().toString(), parseData.getText().toString(), parseData.getHtml().toString());
                         } catch (Exception e) {
-                        	System.out.println("Oh crap, not inserting!");
+                        	log.info("DB_ERR: Unable to insert: " + page.getWebURL().getURL().toString());
                         }
                 }
                 // We dump this crawler statistics after processing every 50 pages
