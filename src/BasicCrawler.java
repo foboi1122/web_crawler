@@ -21,6 +21,10 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -49,6 +53,7 @@ public class BasicCrawler extends WebCrawler {
         public void visit(Page page) {
                 System.out.println("Visited: " + page.getWebURL().getURL());
                 myCrawlStat.incNumPages();
+                myCrawlStat.insertSubdomainsMap(page.getWebURL());
 
                 if (page.getParseData() instanceof HtmlParseData) {
                         HtmlParseData parseData = (HtmlParseData) page.getParseData();
@@ -85,6 +90,28 @@ public class BasicCrawler extends WebCrawler {
 
         public void dumpMyData() {
                 int id = getMyId();
+                try {
+         
+                	String str = "";
+                	str += "Number of unique pages: " + Integer.toString(myCrawlStat.getNumPages()) + "\n";
+                	str += "Number of unique pages: " + Integer.toString(myCrawlStat.getNumPages()) + "\n";
+                	str += "Number of subdomains: " + Integer.toString(myCrawlStat.getSubdomainsMapLength()) + "\n";
+                	str += "Number of words in longest page: " + Long.toString(myCrawlStat.getLongestPageLength()) + "\n";
+        			File file = new File("output_stats.txt");
+         
+        			// if file doesnt exists, then create it
+        			if (!file.exists()) {
+        				file.createNewFile();
+        			}
+         
+        			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        			BufferedWriter bw = new BufferedWriter(fw);
+        			bw.write(str);
+        			bw.close();
+         
+        		} catch (IOException e) {
+        			e.printStackTrace();
+        		}
                 // This is just an example. Therefore I print on screen. You may
                 // probably want to write in a text file.
 //                System.out.println("Crawler " + id + "> Processed Pages: " + myCrawlStat.getTotalProcessedPages());

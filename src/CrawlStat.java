@@ -96,6 +96,10 @@ public class CrawlStat {
         	}
         }
         
+        public int getSubdomainsMapLength() {
+        	return mSubdomainsMap.size();
+        }
+        
         public Map<String, Integer> getSubdomainsMap() {
             return mSubdomainsMap;
         }
