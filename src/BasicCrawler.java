@@ -53,9 +53,9 @@ public class BasicCrawler extends WebCrawler {
         public void visit(Page page) {
                 System.out.println("Visited: " + page.getWebURL().getURL());
                 myCrawlStat.incNumPages();
-                myCrawlStat.insertSubdomainsMap(page.getWebURL());
-
+                
                 if (page.getParseData() instanceof HtmlParseData) {
+                		myCrawlStat.insertSubdomainsMap(page.getWebURL());
                         HtmlParseData parseData = (HtmlParseData) page.getParseData();
                         List<WebURL> links = parseData.getOutgoingUrls();
 //                        myCrawlStat.incTotalLinks(links.size());
@@ -66,9 +66,9 @@ public class BasicCrawler extends WebCrawler {
                                 // Do nothing
                         }
                         try {
-                        	mySqlWrapper.InsertItem(page.getWebURL().getURL(), parseData.getText(), parseData.getHtml());
+                        	mySqlWrapper.InsertItem(page.getWebURL().getURL().toString(), parseData.getText().toString(), parseData.getHtml().toString());
                         } catch (Exception e) {
-                        	// Do Nothing
+                        	System.out.println("Oh crap, not inserting!");
                         }
                 }
                 // We dump this crawler statistics after processing every 50 pages
@@ -86,6 +86,7 @@ public class BasicCrawler extends WebCrawler {
         @Override
         public void onBeforeExit() {
                 dumpMyData();
+                mySqlWrapper.Close();
         }
 
         public void dumpMyData() {

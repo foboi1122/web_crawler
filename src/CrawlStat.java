@@ -19,6 +19,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,12 @@ public class CrawlStat {
         private Map<String, Integer> 	m2gramMap;			//2grams and frequencies Map
         private int 					mMaxTextLength;		//Maximum text length
 
+        public CrawlStat(){
+        	mSubdomainsMap = new HashMap<String, Integer>();
+        	mWordMap = new HashMap<String, Integer>();
+        	m2gramMap = new HashMap<String, Integer>();
+        }
+        
         //Helper function for robust mapping of values
         private void insertMap(Map<String, Integer> map, String word){
         	Integer count = map.get(word);
@@ -97,6 +104,7 @@ public class CrawlStat {
         }
         
         public int getSubdomainsMapLength() {
+        	if (mSubdomainsMap == null) return 0;
         	return mSubdomainsMap.size();
         }
         
@@ -106,7 +114,8 @@ public class CrawlStat {
 
         //parses the url to its domain and subdomain and indexes its location
         public void insertSubdomainsMap(WebURL url){
-        	String link = url.getDomain().toString() + url.getParentUrl().toString();
+        	
+        	String link = url.getSubDomain().toString()+ "."+ url.getDomain().toString();
         	insertMap(this.mSubdomainsMap, link);
         }
         

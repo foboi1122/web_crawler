@@ -44,11 +44,17 @@ public class SqlWrapper
 			e.printStackTrace();
 		}
 		
-		String sql = "INSERT INTO PAGES (URL,BODY,HTML) " +
-                "VALUES ( '" + URL + "', '" +
-						Text + "', '" +
-						HTML + "');";
-		stmt.executeUpdate(sql);
+//		String sql = "INSERT INTO PAGES(URL,BODY,HTML) " +
+//                "VALUES( '" + URL + "', '" +
+//						Text + "', '" +
+//						HTML + "');";
+		
+		PreparedStatement statement = c.prepareStatement("INSERT INTO PAGES (URL,BODY,HTML) values (?, ?, ?)");
+		statement.setString(1, URL);
+		statement.setString(2, Text);
+		statement.setString(3, HTML);
+		statement.executeUpdate();
+//		stmt.executeUpdate(sql);
 	}
 	
 	public static void main( String args[] ) throws SQLException
