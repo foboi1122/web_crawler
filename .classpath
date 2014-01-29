@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="crawler4j_dependencies/tika-parsers-1.0.jar"/>
 	<classpathentry kind="lib" path="crawler4j-3.5/crawler4j-3.5.jar"/>
 	<classpathentry kind="lib" path="crawler4j_dependencies/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="other_dependencies/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
