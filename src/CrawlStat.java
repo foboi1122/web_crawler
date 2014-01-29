@@ -82,12 +82,18 @@ public class CrawlStat {
                 return mNumPages;
         }
 
-        public void incNumPages(int n){
-        	mNumPages += n;
+        public void incNumPages() {
+        	mNumPages += 1;
         }
         
         public long getLongestPageLength() {
             return mLongestPageLength;
+        }
+        
+        public void setLongestPageLength(long pageLength) {
+        	if (pageLength > mLongestPageLength) {
+        		mLongestPageLength = pageLength;
+        	}
         }
         
         public Map<String, Integer> getSubdomainsMap() {

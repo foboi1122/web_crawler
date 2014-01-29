@@ -21,7 +21,6 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -31,9 +30,13 @@ public class BasicCrawler extends WebCrawler {
                         + "|wav|avi|mov|mpeg|ram|m4v|pdf" + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
 
         CrawlStat myCrawlStat;
+        Downloader myDownloader;
+        SqlWrapper mySqlWrapper;
 
         public BasicCrawler() {
                 myCrawlStat = new CrawlStat();
+                myDownloader = new Downloader();
+                mySqlWrapper = new SqlWrapper();
         }
 
         @Override
@@ -45,29 +48,32 @@ public class BasicCrawler extends WebCrawler {
         @Override
         public void visit(Page page) {
                 System.out.println("Visited: " + page.getWebURL().getURL());
-                myCrawlStat.incProcessedPages();
+                myCrawlStat.incNumPages();
 
                 if (page.getParseData() instanceof HtmlParseData) {
                         HtmlParseData parseData = (HtmlParseData) page.getParseData();
                         List<WebURL> links = parseData.getOutgoingUrls();
-                        myCrawlStat.incTotalLinks(links.size());
+//                        myCrawlStat.incTotalLinks(links.size());
                         try {
-                                myCrawlStat.incTotalTextSize(parseData.getText().getBytes("UTF-8").length);
-                        } catch (UnsupportedEncodingException ignored) {
+                        		myDownloader.processUrl(page.getWebURL().getURL());
+                                myCrawlStat.setLongestPageLength(myDownloader.getTextLength());
+                        } catch (Exception ignored) {
                                 // Do nothing
+                        }
+                        try {
+                        	mySqlWrapper.InsertItem(page.getWebURL().getURL(), parseData.getText(), parseData.getHtml());
+                        } catch (Exception e) {
+                        	// Do Nothing
                         }
                 }
                 // We dump this crawler statistics after processing every 50 pages
-                if (myCrawlStat.getTotalProcessedPages() % 50 == 0) {
-                        dumpMyData();
-                }
         }
 
         // This function is called by controller to get the local data of this
         // crawler when job is finished
         @Override
         public Object getMyLocalData() {
-                return myCrawlStat;
+        	return myCrawlStat;
         }
 
         // This function is called by controller before finishing the job.

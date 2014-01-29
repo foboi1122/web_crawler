@@ -13,7 +13,7 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
  */
 public class BasicCrawlController {
 
-		private static String 	USER_AGENT = 		"UCI IR 76111817";
+		private static String 	USER_AGENT = 		"UCI IR 76111817 36928917";
 		private static String 	STORAGE_FOLDER = 	"/crawl/root/";
 		private static int 	  	CRAWL_THREADS = 	2;
 		private static int 	  	CRAWL_DELAY_MS = 	300;
