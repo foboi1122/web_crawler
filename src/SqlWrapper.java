@@ -2,6 +2,8 @@ import java.sql.*;
 
 import org.apache.log4j.Logger;
 
+import edu.uci.ics.crawler4j.url.WebURL;
+
 public class SqlWrapper
 {
 	private Connection c = null;
@@ -19,6 +21,7 @@ public class SqlWrapper
 			String sql = "CREATE TABLE IF NOT EXISTS PAGES " +
 					"(ID INTEGER PRIMARY KEY   AUTOINCREMENT," +
 					" URL            TEXT    NOT NULL, " + 
+					" SUBDOMAIN      TEXT    NOT NULL, " + 
 					" BODY           TEXT    NOT NULL, " + 
 					" HTML           TEXT    NOT NULL)"; 
 			stmt.executeUpdate(sql);
@@ -40,6 +43,9 @@ public class SqlWrapper
 	}
 	
 	public void InsertItem(String URL, String Text, String HTML) throws SQLException{
+		WebURL curURL = new WebURL();
+		curURL.setURL(URL);
+		
 		Statement stmt = null;
 		try {
 			stmt = c.createStatement();
@@ -47,18 +53,13 @@ public class SqlWrapper
 			System.out.println("Error, can't create statement in AddLink");
 			e.printStackTrace();
 		}
-		
-//		String sql = "INSERT INTO PAGES(URL,BODY,HTML) " +
-//                "VALUES( '" + URL + "', '" +
-//						Text + "', '" +
-//						HTML + "');";
-		
-		PreparedStatement statement = c.prepareStatement("INSERT INTO PAGES (URL,BODY,HTML) values (?, ?, ?)");
+
+		PreparedStatement statement = c.prepareStatement("INSERT INTO PAGES (URL,SUBDOMAIN,BODY,HTML) values (?, ?, ?, ?)");
 		statement.setString(1, URL);
-		statement.setString(2, Text);
-		statement.setString(3, HTML);
+		statement.setString(2, curURL.getSubDomain());
+		statement.setString(3, Text);
+		statement.setString(4, HTML);
 		statement.executeUpdate();
-//		stmt.executeUpdate(sql);
 	}
 	
 	public static void main( String args[] ) throws SQLException

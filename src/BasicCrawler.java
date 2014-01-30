@@ -50,7 +50,10 @@ public class BasicCrawler extends WebCrawler {
         @Override
         public boolean shouldVisit(WebURL url) {
                 String href = url.getURL().toLowerCase();
-                return !filters.matcher(href).matches() && href.startsWith("http://www.ics.uci.edu/");
+                return !filters.matcher(href).matches() && 
+                		href.contains("ics.uci.edu") &&
+                		!href.contains("calendar.ics.uci.edu") &&
+                		!href.contains("informatics.uci.edu");		//lulz.. crawler gets confused
         }
 
         @Override
@@ -76,6 +79,8 @@ public class BasicCrawler extends WebCrawler {
                         }
                 }
                 // We dump this crawler statistics after processing every 50 pages
+                if(myCrawlStat.getNumPages()%200 == 0)
+                	log.info("Update: "+Integer.toString(myCrawlStat.getNumPages()) + " Crawled");
         }
 
         // This function is called by controller to get the local data of this
@@ -101,7 +106,7 @@ public class BasicCrawler extends WebCrawler {
                 	str += "Number of unique pages: " + Integer.toString(myCrawlStat.getNumPages()) + "\n";
                 	str += "Number of unique pages: " + Integer.toString(myCrawlStat.getNumPages()) + "\n";
                 	str += "Number of subdomains: " + Integer.toString(myCrawlStat.getSubdomainsMapLength()) + "\n";
-                	str += "Number of words in longest page: " + Long.toString(myCrawlStat.getLongestPageLength()) + "\n";
+                	str += "Number of words in longest page: " + Integer.toString(myCrawlStat.getLongestPageLength()) + "\n";
         			File file = new File("output_stats.txt");
          
         			// if file doesnt exists, then create it

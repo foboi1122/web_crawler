@@ -131,7 +131,6 @@ public class Downloader {
     	}
         
         public void processUrl(String url) {
-              	System.out.println("Processing: " + url);
                 Page page = download(url);
                 if (page != null) {
                 	ParseData parseData = page.getParseData();
@@ -163,7 +162,7 @@ public class Downloader {
                 
                 System.out.println("URL: "+downloader.getURL().toString());
                 System.out.println("Text Length: "+downloader.getTextLength());
-                System.out.println("Two-Grams: "+downloader.getTwoGramList().toString());
-                System.out.println("Word List: "+downloader.getWordList().toString());
+                //System.out.println("Two-Grams: "+downloader.getTwoGramList().toString());
+                //System.out.println("Word List: "+downloader.getWordList().toString());
         }
 }
