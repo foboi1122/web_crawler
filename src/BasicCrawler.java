@@ -50,15 +50,37 @@ public class BasicCrawler extends WebCrawler {
         @Override
         public boolean shouldVisit(WebURL url) {
                 String href = url.getURL().toLowerCase();
+                
+                //we need to be careful around djp3-pc2... source code galore
+                if(href.contains("?") && href.contains("djp3-pc2.ics.uci.edu")) {
+                	href = href.substring(0, href.indexOf("?"));
+					WebURL webUrl = new WebURL();
+					webUrl.setURL(href);
+					webUrl.setDocid(-1);
+					webUrl.setDepth((short) 0);
+					if (!this.getMyController().getRobotstxtServer().allows(webUrl)) {
+						logger.info("Robots.txt does not allow this seed: " + href);
+					} else {
+						this.getMyController().getFrontier().schedule(webUrl);
+					}
+					
+					return false;
+				}
+                
                 return !filters.matcher(href).matches() && 
                 		href.contains("ics.uci.edu") &&
                 		!href.contains("calendar.ics.uci.edu") &&
-                		!href.contains("informatics.uci.edu");		//lulz.. crawler gets confused
+                		!href.contains("informatics.uci.edu") &&		//lulz.. crawler gets confused
+						!href.contains("physics.uci.edu") &&		//lulz.. crawler gets confused
+				!href.contains("archive.ics.uci.edu/ml/datasets.html?");//disallow querries to the server but still allow crawling of the page
         }
 
         @Override
         public void visit(Page page) {
-                System.out.println("Visited: " + page.getWebURL().getURL());
+        		int insertError = 0;	//flag if we get sqlite insertion error
+        		int errorCounter = 0;		//counter for how many times we've got this error on this page
+        		
+                System.out.println(Integer.toString(myCrawlStat.getNumPages()) +" Visited: " + page.getWebURL().getURL());
                 myCrawlStat.incNumPages();
                 
                 if (page.getParseData() instanceof HtmlParseData) {
@@ -67,7 +89,7 @@ public class BasicCrawler extends WebCrawler {
                         List<WebURL> links = parseData.getOutgoingUrls();
 //                        myCrawlStat.incTotalLinks(links.size());
                         try {
-                        		myDownloader.processUrl(page.getWebURL().getURL());
+//                        		myDownloader.processUrl(page.getWebURL().getURL());
                                 myCrawlStat.setLongestPageLength(myDownloader.getTextLength());
                         } catch (Exception ignored) {
                                 // Do nothing
@@ -75,7 +97,22 @@ public class BasicCrawler extends WebCrawler {
                         try {
                         	mySqlWrapper.InsertItem(page.getWebURL().getURL().toString(), parseData.getText().toString(), parseData.getHtml().toString());
                         } catch (Exception e) {
-                        	log.info("DB_ERR: Unable to insert: " + page.getWebURL().getURL().toString());
+                        	insertError = 1;
+                        	
+                        	//TODO: Move this into main insertItem tryy statement
+                        	while(insertError == 1 && errorCounter < 10){
+                        		try{
+                        			insertError = 0;
+                        			log.debug("DB_ERR: retrying insert: " + page.getWebURL().getURL().toString());
+                        			mySqlWrapper.InsertItem(page.getWebURL().getURL().toString(), parseData.getText().toString(), parseData.getHtml().toString());	
+                        		}
+                        		catch (Exception ex){
+                        			errorCounter ++;
+                        			insertError = 1;
+                        		}
+                        	}
+                        	if(errorCounter >= 10)
+                        		log.debug("DB_ERR: Unable to insert: " + page.getWebURL().getURL().toString());
                         }
                 }
                 // We dump this crawler statistics after processing every 50 pages
