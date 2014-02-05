@@ -1,7 +1,5 @@
 import org.apache.log4j.Logger;
 
-import java.util.List;
-
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -15,11 +13,11 @@ public class BasicCrawlController {
 
 		private static String 	USER_AGENT = 		"UCI IR 76111817 36928917";
 		private static String 	STORAGE_FOLDER = 	"/crawl/root/";
-		private static int 	  	CRAWL_THREADS = 	70;
+		private static int 	  	CRAWL_THREADS = 	80;
 		private static int 	  	CRAWL_DELAY_MS = 	300;
 		private static int 	  	CRAWL_DEPTH = 		-1;
 		private static int    	CRAWL_MAX_PG_TO_FETCH = -1;
-		private static boolean 	CRAWL_RESUMABLE = 	true;
+		private static boolean 	CRAWL_RESUMABLE = 	false;
 		private static String 	CRAWL_SEED = 		"http://www.ics.uci.edu/";
 	
 		
@@ -34,7 +32,6 @@ public class BasicCrawlController {
                  * crawlStorageFolder is a folder where intermediate crawl data is
                  * stored.
                  */
-                String crawlStorageFolder = STORAGE_FOLDER;
 
                 /*
                  * numberOfCrawlers shows the number of concurrent threads that should
@@ -99,21 +96,6 @@ public class BasicCrawlController {
                  */
                 controller.start(BasicCrawler.class, numberOfCrawlers);
                 
-                //Calculate stats
-                List<Object> crawlersLocalData = controller.getCrawlersLocalData();
-                long totalLinks = 0;
-                long totalTextSize = 0;
-                int totalProcessedPages = 0;
-                for (Object localData : crawlersLocalData) {
-                        CrawlStat stat = (CrawlStat) localData;
-//                        totalLinks += stat.getTotalLinks();
-//                        totalTextSize += stat.getTotalTextSize();
-//                        totalProcessedPages += stat.getTotalProcessedPages();
-                }
-                System.out.println("Aggregated Statistics:");
-                System.out.println("   Processed Pages: " + totalProcessedPages);
-                System.out.println("   Total Links found: " + totalLinks);
-                System.out.println("   Total Text Size: " + totalTextSize);
                 
                 log.info("**********Crawler stopped at: "+System.currentTimeMillis()+"*************");
         }

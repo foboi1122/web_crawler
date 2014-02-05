@@ -30,21 +30,20 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class BasicCrawler extends WebCrawler {
+	
+		static int numPages;
 
         Pattern filters = Pattern.compile(".*(\\.(css|js|bmp|gif|jpe?g" + "|png|tiff?|mid|mp2|mp3|mp4"
-                        + "|wav|avi|mov|mpeg|ram|m4v|pdf" + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
+                        + "|wav|avi|mov|mpeg|ram|m4v|pdf|csv" + "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
 
-        CrawlStat myCrawlStat;
-        Downloader myDownloader;
         static SqlWrapper mySqlWrapper;
 
         static Logger log = Logger.getLogger(
         		BasicCrawler.class.getName());
         
         public BasicCrawler() {
-                myCrawlStat = new CrawlStat();
-                myDownloader = new Downloader();
                 mySqlWrapper = new SqlWrapper();
+                numPages = 0;
         }
 
         @Override
@@ -72,28 +71,21 @@ public class BasicCrawler extends WebCrawler {
                 		!href.contains("calendar.ics.uci.edu") &&
                 		!href.contains("informatics.uci.edu") &&		//lulz.. crawler gets confused
 						!href.contains("physics.uci.edu") &&		//lulz.. crawler gets confused
-				!href.contains("archive.ics.uci.edu/ml/datasets.html?");//disallow querries to the server but still allow crawling of the page
+				!href.contains("archive.ics.uci.edu/ml/datasets.html?") && //disallow querries to the server but still allow crawling of the page
+				!href.contains("drzaius.ics.uci.edu/cgi-bin/cvsweb.cgi"); // so many dead links
         }
 
         @Override
         public void visit(Page page) {
         		int insertError = 0;	//flag if we get sqlite insertion error
         		int errorCounter = 0;		//counter for how many times we've got this error on this page
+        		numPages++;
         		
-                System.out.println(Integer.toString(myCrawlStat.getNumPages()) +" Visited: " + page.getWebURL().getURL());
-                myCrawlStat.incNumPages();
+                System.out.println(Integer.toString(numPages) +" Visited: " + page.getWebURL().getURL());
                 
                 if (page.getParseData() instanceof HtmlParseData) {
-//                		myCrawlStat.insertSubdomainsMap(page.getWebURL());
                         HtmlParseData parseData = (HtmlParseData) page.getParseData();
                         List<WebURL> links = parseData.getOutgoingUrls();
-//                        myCrawlStat.incTotalLinks(links.size());
-                        try {
-//                        		myDownloader.processUrl(page.getWebURL().getURL());
-                                myCrawlStat.setLongestPageLength(myDownloader.getTextLength());
-                        } catch (Exception ignored) {
-                                // Do nothing
-                        }
                         try {
                         	mySqlWrapper.InsertItem(page.getWebURL().getURL().toString(), parseData.getText().toString(), parseData.getHtml().toString());
                         } catch (Exception e) {
@@ -116,16 +108,10 @@ public class BasicCrawler extends WebCrawler {
                         }
                 }
                 // We dump this crawler statistics after processing every 50 pages
-                if(myCrawlStat.getNumPages()%200 == 0)
-                	log.info("Update: "+Integer.toString(myCrawlStat.getNumPages()) + " Crawled");
+                if(numPages%200 == 0)
+                	log.info("Update: "+Integer.toString(numPages) + " Crawled");
         }
 
-        // This function is called by controller to get the local data of this
-        // crawler when job is finished
-        @Override
-        public Object getMyLocalData() {
-        	return myCrawlStat;
-        }
 
         // This function is called by controller before finishing the job.
         // You can put whatever stuff you need here.
@@ -137,32 +123,5 @@ public class BasicCrawler extends WebCrawler {
 
         public void dumpMyData() {
                 int id = getMyId();
-                try {
-         
-                	String str = "";
-                	str += "Number of unique pages: " + Integer.toString(myCrawlStat.getNumPages()) + "\n";
-                	str += "Number of unique pages: " + Integer.toString(myCrawlStat.getNumPages()) + "\n";
-                	str += "Number of subdomains: " + Integer.toString(myCrawlStat.getSubdomainsMapLength()) + "\n";
-                	str += "Number of words in longest page: " + Integer.toString(myCrawlStat.getLongestPageLength()) + "\n";
-        			File file = new File("output_stats.txt");
-         
-        			// if file doesnt exists, then create it
-        			if (!file.exists()) {
-        				file.createNewFile();
-        			}
-         
-        			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        			BufferedWriter bw = new BufferedWriter(fw);
-        			bw.write(str);
-        			bw.close();
-         
-        		} catch (IOException e) {
-        			e.printStackTrace();
-        		}
-                // This is just an example. Therefore I print on screen. You may
-                // probably want to write in a text file.
-//                System.out.println("Crawler " + id + "> Processed Pages: " + myCrawlStat.getTotalProcessedPages());
-//                System.out.println("Crawler " + id + "> Total Links Found: " + myCrawlStat.getTotalLinks());
-//                System.out.println("Crawler " + id + "> Total Text Size: " + myCrawlStat.getTotalTextSize());
        }
 }
