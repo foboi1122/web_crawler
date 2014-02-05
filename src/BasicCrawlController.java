@@ -17,7 +17,7 @@ public class BasicCrawlController {
 		private static int 	  	CRAWL_DELAY_MS = 	300;
 		private static int 	  	CRAWL_DEPTH = 		-1;
 		private static int    	CRAWL_MAX_PG_TO_FETCH = -1;
-		private static boolean 	CRAWL_RESUMABLE = 	false;
+		private static boolean 	CRAWL_RESUMABLE = 	true;
 		private static String 	CRAWL_SEED = 		"http://www.ics.uci.edu/";
 	
 		
